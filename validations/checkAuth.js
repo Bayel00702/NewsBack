@@ -19,15 +19,15 @@ const auth = (req, res, next) => {
 
         next();
     } catch (err) {
-        res.status(400).send("Invalid auth token...");
+        res.status(400).send("Invalid auth token...\n" + err);
     }
 };
 
 export const isAdmin = (req, res, next) => {
     auth(req, res, () => {
-        console.log(req.user)
-        if (req.user && req.user.isAdmin) { // Check if the user has an 'isAdmin' property set to true
-            next(); // User is an admin, proceed to the next middleware
+        if (req.user && req.user.isAdmin)
+        {
+            next();
         } else {
             res.status(403).send('Access denied. Not authorized...');
         }

@@ -4,20 +4,21 @@ import UsersModel from "../models/user.js"
 
 export const createArticle = async (req, res) => {
     try {
-        const user = await UsersModel.findOne({_id: req.body.creatorId});
+        const creatorId = req.user._id
+        const user = await UsersModel.findOne({_id: creatorId});
 
-        if(!user){
-            res.status({
+        if (!user) {
+            return res.status(403).json({
                 message: "Пользователь не найден (creatorId)",
-                status: 403
-            })
+            });
         }
 
         const request = req.body;
-        const {creatorId, ...reqBody} = request;
+        const {...reqBody } = request;
 
         const resData = {
-            ...reqBody, creatorData: {
+            ...reqBody,
+            creatorData: {
                 id: user._id,
                 name: user.name,
                 image: user.image
@@ -28,17 +29,15 @@ export const createArticle = async (req, res) => {
 
         await doc.save();
 
-        res.json({
+        return res.json({
             message: 'Статья добавлена',
-            states: 'success'
-        })
-
-
+            status: 'success'
+        });
     } catch (err) {
         console.log(err);
-        res.status(500).json({
-            message: 'Не удалось создать статью'
-        })
+        return res.status(500).json({
+            message: 'Не удалось создать статью',
+        });
     }
 };
 
@@ -95,4 +94,34 @@ export const getAllArticles = async (req,res) => {
             message: 'Не удалось получить заказы'
         })
     }
-};
+}
+
+export const getOneArticle = async (req,res) => {
+    try {
+        const article = await ArticleModel.findById(req.params.id);
+
+        if (!article) {
+            return res.status(404).json({
+                message: "Статья не найден",
+            });
+        }
+
+        const user = await UsersModel.findById(article.creatorData.id);
+
+        const orderWithCreatorData = {
+            ...article.toObject(),
+            creatorData: {
+                id: user._id,
+                name: user.name,
+                image: user.image,
+            },
+        };
+
+        res.json(orderWithCreatorData);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Не удалось получить статью",
+        });
+    }
+}

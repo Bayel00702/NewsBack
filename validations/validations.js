@@ -26,5 +26,4 @@ export const addArticleValidation = [
     body('description', 'Описание объявления минимум 3 символа').isLength({min:3}),
     body('category', 'Неверный формат категории').isString(),
     body('views', 'Неверный формат просмотров').isNumeric(),
-
 ];

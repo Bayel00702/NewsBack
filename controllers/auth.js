@@ -29,7 +29,7 @@ export const registerUser = async (req, res) => {
         const userCreate = await doc.save();
 
         // Generate a JWT token for the newly registered user
-        const token = genAuthToken(userCreate);
+        const token = genAuthToken(userCreate._doc);
 
         const { passwordHash, ...userData } = userCreate._doc;
 
@@ -64,9 +64,7 @@ export const loginUser = async (req, res) => {
             })
         }
 
-        const token = jwt.sign({
-            _id: user._id
-        }, 'secret123' , {expiresIn: '30d'});
+        const token = genAuthToken(user._doc)
 
         const { passwordHash, ...userData} = user._doc;
 
