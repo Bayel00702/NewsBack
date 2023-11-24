@@ -46,44 +46,13 @@ export const getAllArticles = async (req,res) => {
 
         let articles = await ArticleModel.find();
 
-        // if (req.query.price === 'asc') {
-        //     orders = await OrdersModel.find().sort({price: 1})
-        // } else if (req.query.price === 'desc') {
-        //     orders = await OrdersModel.find().sort({price: -1})
-        // } else {
-        //     orders = await OrdersModel.find()
-        // }
-        //
-        // if (req.query.status) {
-        //     orders = orders.filter(item => item.status === req.query.status)
-        // }
-        //
-        // if (req.query.title) {
-        //     orders = orders.filter(item => item.title.toLowerCase().startsWith(req.query.title.toLowerCase()))
-        // }
-        //
-        // if (req.query.id) {
-        //     orders = orders.filter(item => item.creatorData.id === req.query.id)
-        // }
-        //
-        // if(req.query.category){
-        //     orders = orders.filter(item => req.query.category.includes(item.category))
-        // }
-        //
-        // if (req.query.createdAt) {
-        //     const filterDate = new Date(req.query.createdAt);
-        //
-        //     orders = orders.filter((item) => {
-        //         const orderDate = new Date(item.createdAt);
-        //         return orderDate > filterDate;
-        //     });
-        // }
-        //
-        // if (req.query.views === 'asc'){
-        //     orders = orders.sort((a,b) => a.views - b.views)
-        // }else if(req.query.views === 'desc'){
-        //     orders = orders.sort((a,b) => b.views - a.views)
-        // }
+        if(req.query.chapter){
+            articles = articles.filter(item => req.query.chapter.includes(item.chapter))
+        }
+
+        if(req.query.subchapter){
+            articles = articles.filter(item => req.query.subchapter.includes(item.subchapter))
+        }
 
 
         res.json(articles)
@@ -122,6 +91,48 @@ export const getOneArticle = async (req,res) => {
         console.error(err);
         res.status(500).json({
             message: "Не удалось получить статью",
+        });
+    }
+}
+
+export const increaseViews = async (req, res) => {
+    try {
+        const articleId = req.params.id; // Получаем id заказа из параметра запроса
+        const article = await ArticleModel.findById(articleId);
+
+        if (!article) {
+            return res.status(404).json({
+                message: 'Заказ не найден',
+                status: 'error'
+            });
+        }
+
+        const userId = req.body.userId;
+
+        if (userId !== article.creatorData.id && userId !== undefined) {
+            const updatedArticle = await ArticleModel.findByIdAndUpdate(
+                articleId,
+                {$inc: {views: 1}},
+                {new: true}
+            );
+
+            return res.json({
+                message: 'Views увеличены',
+                status: 'success',
+                updatedArticle
+            });
+        } else {
+            return res.json({
+                message: 'Вы не можете увеличивать views своего собственного заказа',
+                status: 'success',
+                article
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: 'Не удалось увеличить views',
+            status: 'error'
         });
     }
 }

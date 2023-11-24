@@ -23,7 +23,10 @@ export const loginUserValidation = [
 
 export const addArticleValidation = [
     body('title', 'Заголовок объявления минимум 2 символа').isLength({min:2}),
-    body('description', 'Описание объявления минимум 3 символа').isLength({min:3}),
-    body('category', 'Неверный формат категории').isString(),
+    body('description1', 'Описание объявления минимум 3 символа').isLength({min:3}),
+    body('description2', 'Описание объявления минимум 3 символа').isLength({min:3}),
+    body('description3', 'Описание объявления минимум 3 символа').isLength({min:3}),
+    body('chapter', 'Неверный формат категории').isString(),
+    body('subchapter', 'Неверный формат категории').isString(),
     body('views', 'Неверный формат просмотров').isNumeric(),
 ];

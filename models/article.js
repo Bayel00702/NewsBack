@@ -18,13 +18,25 @@ const articleSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description: {
+    description1: {
         type: String,
         required: true
     },
-    category: {
+    description2: {
         type: String,
         required: true
+    },
+    description3: {
+        type: String,
+
+    },
+    chapter: {
+        type: String,
+        required: true
+    },
+    subchapter: {
+      type: String,
+      required: true
     },
     views: {
         type: Number,
